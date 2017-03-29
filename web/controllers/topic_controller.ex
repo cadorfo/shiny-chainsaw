@@ -43,4 +43,19 @@ defmodule Web.TopicController do
        {:error, changeset} -> render conn, "edit.html", changeset: changeset, topic: topic_record
      end
   end
+
+  def delete(conn, %{"id"=> id}) do
+    topic = Repo.get(Topic,id)
+    case Repo.delete(topic) do
+      {:ok, _topic_deleted} -> {
+        conn
+        |> put_flash(:info, "#{topic.title} was deleted")
+        |> redirect(to: topic_path(conn,:index))
+      }
+      {:error, _changeset} ->
+        { conn
+          |> put_flash(:error, "#{topic.title} wasn't deleted")
+          |> redirect(to: topic_path(conn,:index)) }
+    end
+  end
 end

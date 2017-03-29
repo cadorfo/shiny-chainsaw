@@ -18,10 +18,14 @@ defmodule Web.Router do
 
 
     get "/", TopicController, :index
-    get "/topics/new", TopicController, :new
-    post "/topics", TopicController, :create
-    get "/topics/:id/edit", TopicController, :edit
-    put "/topics/:id", TopicController, :update
+    resources "/topics", TopicController
+
+  end
+  scope "/auth", Web do
+    pipe_through :browser
+
+    get "/:provider", AuthController, :request
+    get "/:provider/callback", AuthController, :callback
   end
 
   # Other scopes may use custom stacks.

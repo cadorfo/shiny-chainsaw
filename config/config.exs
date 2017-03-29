@@ -16,6 +16,10 @@ config :web, Web.Endpoint,
   render_errors: [view: Web.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Web.PubSub,
            adapter: Phoenix.PubSub.PG2]
+config :ueberauth, Ueberauth,
+   providers: [
+     github: { Ueberauth.Strategy.Github, [  ] }
+  ]
 
 # Configures Elixir's Logger
 config :logger, :console,
