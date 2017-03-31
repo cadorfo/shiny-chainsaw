@@ -1,12 +1,13 @@
 defmodule Web.User do
   use Web.Web, :model
 
-  schema "user" do
+  schema "users" do
     field :email, :string
     field :provider, :string
     field :token, :string
     field :name, :string
     field :username, :string
+    timestamps
   end
 
   def changeset(struct, params \\%{}) do
