@@ -18,9 +18,14 @@
 
     <nav class="light-blue">
         <div class="nav-wrapper container">
-          <a href="http://www.phoenixframework.org/docs" class="branch-logo">
-            Discussions
-          </a>
+          <a href="/" class="brand-logo"> Discussions </a>
+          <ul class="right">
+            <%= if @conn.assigns[:user] do %>
+              <li> <%= link "Logout", to: auth_path(@conn, :signout) %> </li>
+            <% else %>
+            <li> <%= link "Sign in Github", to: auth_path(@conn, :request, "github") %></li>
+            <% end %>
+          </ul>
         </div>
     </nav>
 
