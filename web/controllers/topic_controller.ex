@@ -1,11 +1,18 @@
 defmodule Web.TopicController do
   use Web.Web, :controller
-
   alias Web.Topic
+
+  plug Web.Plugs.RequireAuth when action in [:new, :create, :edit, :update, :delete]
+  plug :check_topic_owner when action in [:update, :edit, :delete]
 
   def index(conn, _params) do
     topics = Repo.all(Topic)
     render(conn, "index.html", topics: topics)
+  end
+
+  def show(conn, %{"id" => topic_id} = params) do
+    topic = Repo.get!(Topic, topic_id)
+    render conn, "show.html", topic: topic
   end
 
   def new(conn, params) do
@@ -15,7 +22,11 @@ defmodule Web.TopicController do
 
   def create(conn,%{"topic" => topic}) do
      %{"title" => title} = topic
-     changeset = Topic.changeset(%Topic{}, topic)
+
+    changeset = conn.assigns.user
+     |> build_assoc(:topics)
+     |> Topic.changeset(topic)
+
      case Repo.insert(changeset) do
        {:ok, post} ->
           conn
@@ -57,5 +68,16 @@ defmodule Web.TopicController do
           |> put_flash(:error, "#{topic.title} wasn't deleted")
           |> redirect(to: topic_path(conn,:index)) }
     end
+  end
+
+  defp check_topic_owner(%{params: %{id: topic_id }, assigns: %{ user: user } } = conn, params) do
+     if Repo.get(Topic,topic_id).user_id == user.id do
+        conn
+      else
+        conn
+        |> put_flash(:error, "You cannot edit that")
+        |> redirect(to: topic_path(conn, :index))
+        |> halt()
+     end
   end
 end
